@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modoo - تطبيق توصيل الطعام</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@700&display=swap');
+
+        /* Global Styles & Fonts */
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            background-color: #f7f7f7;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* --- Landing Page Styles --- */
+        .landing-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #ff8c00, #ff4500);
+            text-align: center;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+        }
+        .logo-text {
+            font-size: 5rem;
+            color: #00008b;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .slogan {
+            font-size: 1.5rem;
+        }
+        .food-image {
+            width: 90%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            margin: 20px 0 40px;
+        }
+        .get-started-btn {
+            background-color: #00008b;
+            color: white;
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .get-started-btn:hover {
+            background-color: #0000cd;
+            transform: translateY(-3px);
+        }
+
+        /* --- Main App Styles --- */
+        .app-container {
+            display: none;
+            min-height: 100vh;
+            background-color: #fff;
+            padding-top: 60px;
+        }
+        .navbar {
+            background-color: #00008b;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+        .navbar .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .navbar .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .navbar .user-name {
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+        .navbar .login-btn,
+        .navbar .user-info button {
+            background: none;
+            border: 2px solid white;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .navbar .login-btn:hover,
+        .navbar .user-info button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        .cart-icon {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            cursor: pointer;
+            position: relative;
+        }
+        .cart-count {
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+
+        /* --- Login Modal Styles --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .close-btn {
+            color: #aaa;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .modal-content button {
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* --- Main Content & Restaurant List --- */
+        .main-content {
+            padding: 20px;
+            text-align: center;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            color: #00008b;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .restaurants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+        }
+        .restaurant-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .restaurant-item:hover {
+            transform: translateY(-5px);
+        }
+        .restaurant-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        .restaurant-item p {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        /* --- Menu and Cart Pages --- */
+        .page {
+            display: none;
+        }
+        .menu-list {
+            padding: 20px;
+        }
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .menu-item-info h4 {
+            margin: 0 0 5px;
+        }
+        .menu-item-info p {
+            margin: 0;
+            color: #777;
+        }
+        .menu-controls {
+            display: flex;
+            align-items: center;
+        }
+        .menu-controls button {
+            background-color: #00008b;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .menu-controls span {
+            margin: 0 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .cart-list, .orders-list {
+            padding: 20px;
+            text-align: right;
+        }
+        .cart-list h3, .orders-list h3 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .cart-item, .order-item {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-actions button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .checkout-btn {
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        .order-item span {
+            font-weight: bold;
+        }
+        .status-pending {
+            color: orange;
+        }
+        .status-delivery {
+            color: green;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="landing-page" id="landingPage">
+        <h1 class="logo-text">Modoo</h1>
+        <p class="slogan">تطبيق توصيل الطعام</p>
+        <img src="image.png" alt="صورة برجر شهي" class="food-image">
+        <button class="get-started-btn" id="getStartedBtn">ابدأ الآن</button>
+    </div>
+
+    <div class="app-container" id="appContainer">
+
+        <nav class="navbar">
+            <div class="logo" id="homeBtn">Modoo</div>
+            <div class="user-info">
+                <div class="cart-icon" id="cartBtn">
+                    🛒
+                    <span id="cartCount" class="cart-count" style="display:none;">0</span>
+                </div>
+                <div id="userSection">
+                    <button class="login-btn" id="loginBtn">تسجيل الدخول</button>
+                </div>
+            </div>
+        </nav>
+
+        <div id="restaurantsPage" class="page main-content">
+            <h2 class="section-title">قائمة المطاعم</h2>
+            <div id="restaurantsGrid" class="restaurants-grid"></div>
+        </div>
+
+        <div id="menuPage" class="page main-content">
+            <h2 id="menuTitle" class="section-title">قائمة طعام المطعم</h2>
+            <div id="menuList" class="menu-list"></div>
+        </div>
+
+        <div id="cartPage" class="page main-content">
+            <h2 class="section-title">عربة التسوق</h2>
+            <div id="cartList" class="cart-list"></div>
+            <button id="checkoutBtn" class="checkout-btn" style="display:none;">إتمام الطلب</button>
+        </div>
+
+        <div id="ordersPage" class="page main-content">
+            <h2 class="section-title">قائمة الطلبات</h2>
+            <div id="ordersList" class="orders-list"></div>
+        </div>
+
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">×</span>
+            <h2>تسجيل الدخول</h2>
+            <form id="loginForm">
+                <input type="text" id="username" placeholder="الاسم" required>
+                <input type="password" id="password" placeholder="كلمة المرور" required>
+                <button type="submit">دخول</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const landingPage = document.getElementById('landingPage');
+            const appContainer = document.getElementById('appContainer');
+            const getStartedBtn = document.getElementById('getStartedBtn');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginModal = document.getElementById('loginModal');
+            const closeModalBtn = document.getElementById('closeModal');
+            const loginForm = document.getElementById('loginForm');
+            const userSection = document.getElementById('userSection');
+            const defaultProfilePic = 'https://i.pinimg.com/736x/14/43/55/144355d7b36c5f646435423798281ce9.jpg';
+
+            const homeBtn = document.getElementById('homeBtn');
+            const cartBtn = document.getElementById('cartBtn');
+            const cartCount = document.getElementById('cartCount');
+
+            const restaurantsPage = document.getElementById('restaurantsPage');
+            const menuPage = document.getElementById('menuPage');
+            const cartPage = document.getElementById('cartPage');
+            const ordersPage = document.getElementById('ordersPage');
+
+            const restaurantsGrid = document.getElementById('restaurantsGrid');
+            const menuTitle = document.getElementById('menuTitle');
+            const menuList = document.getElementById('menuList');
+            const cartList = document.getElementById('cartList');
+            const ordersList = document.getElementById('ordersList');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+
+            let cart = {};
+            const restaurantData = {
+                'البيك': {
+                    logo: 'https://scontent.fruh4-6.fna.fbcdn.net/v/t39.30808-6/327145606_1627642934350848_5931813585257530027_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=MObspcFbsDwQ7kNvwGpDSsK&_nc_oc=AdkBW38lRR3ett7nRCNS9YfzGss5bBI7M433gCtXEhAXj7mLmGWj8ODS6T3n9iGflrbD4J8RzVVxk3VCgyoAnx6D&_nc_zt=23&_nc_ht=scontent.fruh4-6.fna&_nc_gid=QaoeQ3ah1Fr2mPy3l9xdCg&oh=00_AfW6aUEAdAeBv57wtMzvu4VcjtX_G8jN2D5Tx7bTpEyrhQ&oe=68AE2B20',
+                    menu: [{ name: 'وجبة دجاج مسحب', price: 15 }, { name: 'شاورما', price: 10 }]
+                },
+                'الرومانسية': {
+                    logo: 'https://mgmt.manhom.com/images/32814/1729171887/%D8%B4%D8%B1%D9%83%D8%A9-%D8%A7%D9%84%D8%B1%D9%88%D9%85%D8%A7%D9%86%D8%B3%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D8%AD%D8%AF%D9%88%D8%AF%D8%A9.webp',
+                    menu: [{ name: 'مندي دجاج', price: 25 }, { name: 'كبسة لحم', price: 45 }]
+                },
+                'كنتاكي': {
+                    logo: 'https://play-lh.googleusercontent.com/QziaUvJ3RXas5WbNrT1pIkeVaVLi9lfmqPxVUukBx0zuY5lPv13dVKyKEBYTKI-OCX5Y=w480-h960-rw',
+                    menu: [{ name: 'وجبة تويستر', price: 18 }, { name: 'وجبة ستربس', price: 22 }]
+                },
+                'طازج': {
+                    logo: 'https://scontent.fruh4-4.fna.fbcdn.net/v/t39.30808-6/460824056_941178104722191_3838755120709068742_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=a3aJIzpcNhIQ7kNvwHmK2fv&_nc_oc=Adk5D_3BfuakphFEKpN9wK7oBYQ2toci7WxjOJaPfQPePEoWXQETw6pKXqryPPnXhm6kaPWMOdGEhAp3kF6ZCR8a&_nc_zt=23&_nc_ht=scontent.fruh4-4.fna&_nc_gid=CDk0z9ZLQIm5K-t_F5e1KA&oh=00_AfWZmhhpVxo3Ee7JaNASseIfPrHXZCJx7C0x5m0YysO-VA&oe=68AE3EDB',
+                    menu: [{ name: 'شيش طاووق', price: 20 }, { name: 'فروج مشوي', price: 30 }]
+                },
+                'كوزي': {
+                    logo: 'https://scontent.fruh4-1.fna.fbcdn.net/v/t39.30808-6/476344753_1064923792342957_6016275360602408838_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=PkMLuVTQIxYQ7kNvwHSeZBg&_nc_oc=AdnHHX8uHmSymHUzzLA-i7goG-0aWLI2QvFwE1oC2Vx5cEm8pInLyTevefSMTxGBB491ptl3jX7U46eOwk2f8h_4&_nc_zt=23&_nc_ht=scontent.fruh4-1.fna&_nc_gid=W48vtRgSKmOSDcKVpyIQmw&oh=00_AfUu1HyZ-nIkg9DDuePzn1Xp_bGy8NJhbkGgc5ePk71ngw&oe=68AE4C2E',
+                    menu: [{ name: 'وجبة برياني', price: 28 }, { name: 'وجبة كوزي', price: 50 }]
+                },
+                'برجر كينج': {
+                    logo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAA4CAMAAABnuDDbAAAAnFBMVEX/hzL////WIwDUAAD06dn169z//v7/gSL/gyf7toz5zK327t/VFQD28eL29Ob4+ertwrTmnZD69e7ea1/psaT8+fXop5rz39DhfnH48OX40rbWIwvgdmnaSzvw0cPx2MrkkoXdYlTXMyLjiHvbVEbruqz+j0T317723sn6vJX9omn9nF78q3n5xKH+l1X+jDz/eQDXKxjYPCv7sYIUF0reAAAEGElEQVRIiY2WC3uyOgyAkbRe1qblJlct4GRzft92puf//7eTFkXc3Bl5fCwteUmaBhJv9oPMf7oxm3nfdNdRIThnVjgvimj9C7OOhNXkXPRiLxkT0fxHhgCrjYofXp+slAeGypJMrB8yEWdcIL6+Hb3FTbw/q1KgoHvrb8zcEur173KxXHp3slwsjqWlivk9E5FX+PSy+KI/YN67paIxUzCOh4/FQ6CXxT+lukLeBVHv/0c46l8k/64MOVb8/Q0h6IP3lohZk5UJCG3rgyytHSM4vk1BCDoqLixDZg6fkxBy70mQIW9W8OL4OMSPBHlBDG1smmfOUCk4MUyU05nlSrCZNyfmczFVPomZE8OxfJostBPHcIWoKOdpoMRWdkSF9qVAQevo5qJXGpi9X502DHNIVAqN3tC0rYWoWwm7EM2pqvwY9xUpZaJnRAA+SIgVyL3eSsnBlyS8BkkXEOT94FbPODBgNtLXsmcYyE1DSjGpPO8gy6XM88SAfM4lGDEwpNCqG5MagE76J10brkkzTZxSAlCLkW8yxYHxJfi7DGSeAmmRbwDPxq7KrRp8k81eQjZifOg4yDihy/xZ+tu9MW7V3GIAvCPTvn9mO9/6lm/lTp19CIy0DBjD7YNPcn+z428rH9ieHuTL1jIUg4aMAP0651tFTLihnWHP1GAlVLWk4ZQJgIYDbHRjlzc6dLczgIQUm57hog6CLkOOOkgDOu0sESJL6NyzNK01YtB1XaZNoFWdXM6HCxPHhpCgzRlptDHtlD+3KS2ppg0pi4Sum7jdhJm65g5tQAKRNJxVbSdMxZQZCWIDdguc0sqmBrl3ywOfQkRhpoGldtJp+vclKgqLjFG1dmoFxJgxoV3f6dCSiWMg1I7RiZuB9WBsR27ceoAjxpcXZmuvO2Y2+2Bshw6ZdFO8YyBtnW+9u3Vg8BqDnrFYqPgd4/sVrcaZZdCdVohfmT3eMbJfdYzUJ2c5EF99y/WIkeG5Z7i1k1HYaXLJgz4G6SVSY6ZzD4v1jv5bnVGC3zFgcmepHjP63DP2GGS12dlQiPGZcvfQMB0xyhqiuOFOXryvrvnm4pJh51Bj/2u1ta+dQDs0KLIzOGp45zim9s3mmFQypBSTVYrC7GSOXGRbaG27gOn+RF+U7PZ9UyT2u+eG2wTdt9ENqHS/PjBvq8lyuJxp/bmcKlSIiZlRDKaWub7QUf2hcrqaWoCWH4Wrc5PLNll5YdzV076j8H6nlouVcF2F17chQrz/WXxrj27q1Ci9vLGib0S8a4ckFCvfjh/LBwVx+XJcPWWuXkW3HmlOT+jbPcWyw2s5FMvy9WD7PiqABPBLNzb0fBFhrq0cGstbe2kbTF4MTd+4t6T2NSqogWVjcX1stB53pN/63is/+7ld/g/xSWA1KLsJPAAAAABJRU5ErkJggg==',
+                    menu: [{ name: 'وجبة وابر', price: 20 }, { name: 'وجبة تشيكن رويال', price: 19 }]
+                },
+                'ماكدونالدز': {
+                    logo: 'https://pbs.twimg.com/profile_images/1918682996539875328/8A6YmbkT_400x400.jpg',
+                    menu: [{ name: 'بيج ماك', price: 21 }, { name: 'وجبة ماك تشيكن', price: 20 }]
+                },
+                'ستاربكس': {
+                    logo: 'https://upload.wikimedia.org/wikipedia/ar/e/ee/%D8%B4%D8%B9%D8%A7%D8%B1_%D8%B4%D8%B1%D9%83%D8%A9_%D8%B3%D8%AA%D8%A7%D8%B1%D8%A8%D9%83%D8%B3_2011.svg',
+                    menu: [{ name: 'لاتيه', price: 18 }, { name: 'فرابتشينو', price: 25 }]
+                },
+            };
+            
+
+            // Initial setup and event listeners
+            function showPage(page) {
+                const pages = [restaurantsPage, menuPage, cartPage, ordersPage];
+                pages.forEach(p => p.style.display = 'none');
+                page.style.display = 'block';
+            }
+
+            getStartedBtn.addEventListener('click', () => {
+                landingPage.style.transform = 'translateY(-100%)';
+                landingPage.style.opacity = '0';
+                setTimeout(() => {
+                    landingPage.style.display = 'none';
+                    appContainer.style.display = 'block';
+                    showPage(restaurantsPage);
+                }, 500);
+            });
+
+            loginBtn.addEventListener('click', () => {
+                loginModal.style.display = 'flex';
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                loginModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target == loginModal) {
+                    loginModal.style.display = 'none';
+                }
+            });
+
+            loginForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const username = document.getElementById('username').value;
+                loginModal.style.display = 'none';
+                userSection.innerHTML = `
+                    <img src="${defaultProfilePic}" alt="صورة الملف الشخصي" class="profile-pic">
+                    <span class="user-name">أهلاً بك، ${username}</span>
+                `;
+            });
+
+            // Home & Cart Button handlers
+            homeBtn.addEventListener('click', () => showPage(restaurantsPage));
+            cartBtn.addEventListener('click', () => renderCart());
+
+            // Render Restaurants on the page
+            function renderRestaurants() {
+                restaurantsGrid.innerHTML = '';
+                Object.keys(restaurantData).forEach(restaurantName => {
+                    const div = document.createElement('div');
+                    div.className = 'restaurant-item';
+                    div.innerHTML = `
+                        <img src="${restaurantData[restaurantName].logo}" alt="${restaurantName}">
+                        <p>${restaurantName}</p>
+                    `;
+                    div.addEventListener('click', () => renderMenu(restaurantName));
+                    restaurantsGrid.appendChild(div);
+                });
+            }
+            renderRestaurants();
+
+            // Render Menu for a specific restaurant
+            function renderMenu(restaurantName) {
+                menuTitle.textContent = `قائمة طعام ${restaurantName}`;
+                menuList.innerHTML = '';
+                restaurantData[restaurantName].menu.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'menu-item';
+                    div.innerHTML = `
+                        <div class="menu-item-info">
+                            <h4>${item.name}</h4>
+                            <p>${item.price} ريال</p>
+                        </div>
+                        <div class="menu-controls">
+                            <button data-action="remove" data-item="${item.name}">-</button>
+                            <span data-item="${item.name}">0</span>
+                            <button data-action="add" data-item="${item.name}">+</button>
+                        </div>
+                    `;
+                    menuList.appendChild(div);
+                });
+                showPage(menuPage);
+
+                // Add event listeners for menu item controls
+                menuList.querySelectorAll('.menu-controls button').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const action = event.target.dataset.action;
+                        const itemName = event.target.dataset.item;
+                        const quantitySpan = event.target.closest('.menu-controls').querySelector('span');
+                        let currentQuantity = parseInt(quantitySpan.textContent);
+
+                        if (action === 'add') {
+                            currentQuantity++;
+                            if (!cart[itemName]) {
+                                cart[itemName] = { ...restaurantData[restaurantName].menu.find(i => i.name === itemName), quantity: 0 };
+                            }
+                            cart[itemName].quantity = currentQuantity;
+                        } else if (action === 'remove' && currentQuantity > 0) {
+                            currentQuantity--;
+                            cart[itemName].quantity = currentQuantity;
+                            if (currentQuantity === 0) {
+                                delete cart[itemName];
+                            }
+                        }
+                        quantitySpan.textContent = currentQuantity;
+                        updateCartCount();
+                    });
+                });
+            }
+
+            // Render Shopping Cart
+            function renderCart() {
+                cartList.innerHTML = '';
+                let totalItems = 0;
+                for (const itemName in cart) {
+                    if (cart[itemName].quantity > 0) {
+                        const item = cart[itemName];
+                        totalItems++;
+                        const div = document.createElement('div');
+                        div.className = 'cart-item';
+                        div.innerHTML = `
+                            <span>${item.name} (${item.quantity} قطعة) - ${item.price * item.quantity} ريال</span>
+                            <div class="cart-actions">
+                                <button data-item="${itemName}">إزالة</button>
+                            </div>
+                        `;
+                        div.querySelector('button').addEventListener('click', () => {
+                            delete cart[itemName];
+                            renderCart();
+                            updateCartCount();
+                            document.querySelector(`.menu-controls span[data-item="${itemName}"]`).textContent = '0';
+                        });
+                        cartList.appendChild(div);
+                    }
+                }
+                if (totalItems > 0) {
+                    checkoutBtn.style.display = 'block';
+                } else {
+                    cartList.innerHTML = '<p style="text-align:center;">عربة التسوق فارغة.</p>';
+                    checkoutBtn.style.display = 'none';
+                }
+                showPage(cartPage);
+            }
+
+            // Update cart icon counter
+            function updateCartCount() {
+                let count = Object.values(cart).reduce((total, item) => total + item.quantity, 0);
+                cartCount.textContent = count;
+                cartCount.style.display = count > 0 ? 'block' : 'none';
+            }
+
+            // Handle Checkout
+            checkoutBtn.addEventListener('click', () => {
+                ordersList.innerHTML = `
+                    <div class="order-item">
+                        <span>طلبك قيد الانتظار...</span>
+                        <span class="status-pending">بانتظار الموافقة</span>
+                    </div>
+                `;
+                showPage(ordersPage);
+                cart = {}; // Clear cart
+                updateCartCount();
+                
+                // Simulate order processing and delivery time
+                setTimeout(() => {
+                    ordersList.innerHTML = `
+                        <div class="order-item">
+                            <span>طلبك قادم في الطريق!</span>
+                            <span class="status-delivery">سيصل خلال 30 دقيقة</span>
+                        </div>
+                    `;
+                }, 3000); // 3 seconds to simulate approval
+            });
+        });
+    </script>
+</body>
+</html>
